@@ -15,5 +15,8 @@
   ],
   "author": "radiliadi",
   "license": "ISC",
-  "homepage": "https://bitbucket.org/radiliadi/api-kmprn#readme"
+  "homepage": "https://bitbucket.org/radiliadi/api-kmprn#readme",
+  "dependencies": {
+    "express": "^4.16.2"
+  }
 }
