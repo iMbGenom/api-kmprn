@@ -1,2 +1,3 @@
 #STARTIGNORE
 .DS_Store
+package-lock.json
