@@ -1,0 +1,19 @@
+{
+  "name": "api-kmprn",
+  "version": "1.0.0",
+  "description": "test sakata",
+  "main": "app.js",
+  "scripts": {
+    "test": "sakata gintoki"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://radiliadi@bitbucket.org/radiliadi/api-kmprn.git"
+  },
+  "keywords": [
+    "radiliadi"
+  ],
+  "author": "radiliadi",
+  "license": "ISC",
+  "homepage": "https://bitbucket.org/radiliadi/api-kmprn#readme"
+}
