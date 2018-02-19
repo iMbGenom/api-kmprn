@@ -260,32 +260,101 @@ router.post('/delete', function(req, res) {
 
 router.post('/search', function(req, res) {
 	var result 			= [];
-	var news 			= [];
+	var search 			= [];
 	var msg 			= 'Invalid params';
 	var status 			= false;
 	var jakTime 		= 25200;
 	var d 				= Math.floor(new Date() / 1000)+jakTime;
 	var byDate 			= true;
+	var nws_status 		= 1;
 	let start_index 	= req.body.start_index ? req.body.start_index : 0;
 	let record_count 	= req.body.record_count ? req.body.record_count : 10;
 	let date_published 	= req.body.nws_date_published ? req.body.nws_date_published : d;
-	let query 			= {nws_status:req.body.nws_status,nws_topics:{$regex:'.*' + req.body.nws_topics + '.*'}};
+	let query 			= {nws_status:nws_status,nws_topics:{$regex:'.*' + req.body.nws_topics + '.*'}};
 
-	News.searchNews(query, start_index, record_count, date_published, byDate, function(err, news) {
-		if (news.length > 0) {
-			for (let k in news) {
+	var objRedis 				= {};
+	objRedis.enable 			= cacheRedis.search.enable;
+	objRedis.prefix 			= 'search';
+	objRedis.params 			= {};
+	objRedis.params.topics 		= req.body.nws_topics;
+	objRedis.params.status		= nws_status;
+	objRedis.params.start_index = start_index ? start_index : 0;
+	objRedis.params.record_count= record_count ? record_count : 10;
+
+	News.searchNews(query, start_index, record_count, date_published, byDate, function(err, search) {
+		if (search.length > 0) {
+			for (let k in search) {
 				var msg 				= 'Success'
 				var status 				= true;
-				var result 				= {numFound: news.length, message: msg, return: status, response: news};
-				// if (objRedis.enable) {
-				// 	objRedis.result = JSON.stringify(result);
-				// 	GH.redisSave(objRedis);
-				// }
+				var result 				= {numFound: search.length, message: msg, return: status, response: search};
+				if (objRedis.enable) {
+					objRedis.result = JSON.stringify(result);
+					GH.redisSave(objRedis);
+				}
 				res.json(result);
 			}
 		}
 		else {
-			var result 	= {numFound: 0, message: msg, return: status, response: news};
+			var result 	= {numFound: 0, message: msg, return: status, response: search};
+			res.json(result)
+		}
+	});
+});
+
+router.post('/filter', function(req, res) {
+	var result 			= [];
+	var filter 			= [];
+	var msg 			= 'Invalid params';
+	var status 			= false;
+	var jakTime 		= 25200;
+	var d 				= Math.floor(new Date() / 1000)+jakTime;
+	var byDate 			= true;
+	var nws_status 		= 1;
+	var filter_status 	= req.body.status;
+	let start_index 	= req.body.start_index ? req.body.start_index : 0;
+	let record_count 	= req.body.record_count ? req.body.record_count : 10;
+	let date_published 	= req.body.nws_date_published ? req.body.nws_date_published : d;
+	var query 			= {nws_status:nws_status};
+	if (filter_status == 0) { //draft
+		var query 		= {nws_status:nws_status,nws_is_draft:1};
+	}
+	else if (filter_status == 1) { //delete
+		var nws_status 	= 2
+		var query 		= {nws_status:nws_status};
+	}
+	else if (filter_status == 2) { //publish
+		var query 		= {nws_status:nws_status,nws_is_publish:1};
+	}
+	else {
+		var result 	= {numFound: 0, message: msg, return: status, response: filter};
+		res.json(result);
+		return false;
+	}
+
+	var objRedis 				= {};
+	objRedis.enable 			= cacheRedis.filter.enable;
+	objRedis.prefix 			= 'filter';
+	objRedis.params 			= {};
+	objRedis.params.topics 		= req.body.nws_topics;
+	objRedis.params.status		= nws_status;
+	objRedis.params.start_index = start_index ? start_index : 0;
+	objRedis.params.record_count= record_count ? record_count : 10;
+
+	News.searchNews(query, start_index, record_count, date_published, byDate, function(err, filter) {
+		if (filter.length > 0) {
+			for (let k in filter) {
+				var msg 				= 'Success'
+				var status 				= true;
+				var result 				= {numFound: filter.length, message: msg, return: status, response: filter};
+				if (objRedis.enable) {
+					objRedis.result = JSON.stringify(result);
+					GH.redisSave(objRedis);
+				}
+				res.json(result);
+			}
+		}
+		else {
+			var result 	= {numFound: 0, message: msg, return: status, response: filter};
 			res.json(result)
 		}
 	});
