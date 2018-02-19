@@ -1,9 +1,10 @@
 let mongoose 	= require('mongoose');
 
 let newsSchema = mongoose.Schema({
-	nws_id:{
-		type: String
-	},
+	// nws_id:{
+	// 	type: String,
+	// 	required: false
+	// },
 	nws_title:{
 		type: String,
 		// required: true

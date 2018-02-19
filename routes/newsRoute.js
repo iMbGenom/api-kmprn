@@ -118,7 +118,7 @@ router.post('/', function(req, res) {
 	var start_index 	= req.body.start_index ? req.body.start_index : 0;
 	var date_published 	= req.body.nws_date_published ? req.body.nws_date_published : d;
 	// var date_published 	= req.body.date_published ? req.body.date_published : d.toISOString().replace(/T/, ' ').replace(/\..+/, '');
-	let query 			= {nws_id:req.body.nws_id,nws_status:1,nws_is_publish:1,nws_type:type,nws_date_published:{$lte:date_published}};
+	let query 			= {_id:req.body.nws_id,nws_status:1,nws_is_publish:1,nws_type:type,nws_date_published:{$lte:date_published}};
 	// let query 			= {_id:req.body.nws_id};
 	var news 			= [];
 
@@ -209,8 +209,7 @@ router.post('/delete', function(req, res) {
 	var msg 			= 'Invalid params';
 	var status 			= false;
 	let news 			= {};
-	var nws_id 			= req.body.nws_id;
-	let query 			= {nws_id:nws_id,nws_status:1};
+	let query 			= {_id:req.body.nws_id,nws_status:1};
 	// let query 			= {_id:nws_id,nws_status:1};
 	news.status 		= 0;
 
