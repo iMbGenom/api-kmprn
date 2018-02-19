@@ -71,10 +71,26 @@ module.exports.getAllNews = function(callback, limit) {
 }
 
 module.exports.getNewsById = function(query, start_index, record_count, date_published, byDate, callback, limit) {
-	var urutan 	= { nws_date_created: -1 };
-	console.log(query);
+	var urutan 	= { nws_date_published: -1 };
+	// console.log(query);
 	// console.log(urutan);
 	// console.log(record_count);
+	if (byDate) {
+		// console.log('by date');
+		News.find(query, callback).sort(urutan).limit(record_count);
+	}
+	else {
+		// console.log('by skip');
+		News.find(query, callback).sort(urutan).skip(start_index).limit(record_count);
+	}
+}
+
+module.exports.deleteNews = function(query, news, callback) {
+	News.updateOne(query, news, callback);
+}
+
+module.exports.searchNews = function(query, start_index, record_count, date_published, byDate, callback, limit) {
+	var urutan 	= { nws_date_published: -1 };
 	if (byDate) {
 		console.log('by date');
 		News.find(query, callback).sort(urutan).limit(record_count);
@@ -83,16 +99,4 @@ module.exports.getNewsById = function(query, start_index, record_count, date_pub
 		console.log('by skip');
 		News.find(query, callback).sort(urutan).skip(start_index).limit(record_count);
 	}
-}
-
-module.exports.sendLikeNews = function(query, news, callback) {
-	News.updateOne(query, news, callback);
-}
-
-module.exports.deleteNews = function(query, news, callback) {
-	News.updateOne(query, news, callback);
-}
-
-module.exports.deleteNewsAll = function(query, news, callback) {
-	News.updateMany(query, news, callback);
 }

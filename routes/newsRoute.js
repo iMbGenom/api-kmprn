@@ -207,9 +207,30 @@ router.post('/delete', function(req, res) {
 	var result 			= [];
 	var msg 			= 'Invalid params';
 	var status 			= false;
+	var nws_id 			= req.body.nws_id;
+	var nws_type 		= req.body.nws_type;
+	var nws_status 		= 1;
+	let query 			= {_id:nws_id,nws_type:nws_type,nws_status:nws_status};
 	let news 			= {};
-	let query 			= {_id:req.body.nws_id,nws_status:1};
-	news.nws_status 	= 0;
+	news.nws_status 	= 2;
+
+	var objRedis 				= {};
+	objRedis.enable 			= cacheRedis.news.enable;
+	objRedis.prefix 			= 'news';
+	objRedis.params 			= {};
+	objRedis.params._id 		= nws_id;
+	objRedis.params.nws_type	= nws_type;
+	objRedis.params.start_index = req.body.start_index ? req.body.start_index : 0;
+	objRedis.params.record_count= req.body.record_count ? req.body.record_count : 10;
+
+	if (objRedis.enable) {
+		GH.redisDelete(objRedis, function(redisData, err, value) {
+			if (redisData) {
+				console.log('delete failed');
+			}
+			console.log('delete success');
+		});
+	}
 
 	News.deleteNews(query, news, function(err, news) {
 		if (err) {
@@ -233,6 +254,39 @@ router.post('/delete', function(req, res) {
 			let data 	= {response: result, message: msg, return: status};
 			res.json(data);
 			return false;
+		}
+	});
+});
+
+router.post('/search', function(req, res) {
+	var result 			= [];
+	var news 			= [];
+	var msg 			= 'Invalid params';
+	var status 			= false;
+	var jakTime 		= 25200;
+	var d 				= Math.floor(new Date() / 1000)+jakTime;
+	var byDate 			= true;
+	let start_index 	= req.body.start_index ? req.body.start_index : 0;
+	let record_count 	= req.body.record_count ? req.body.record_count : 10;
+	let date_published 	= req.body.nws_date_published ? req.body.nws_date_published : d;
+	let query 			= {nws_status:req.body.nws_status,nws_topics:{$regex:'.*' + req.body.nws_topics + '.*'}};
+
+	News.searchNews(query, start_index, record_count, date_published, byDate, function(err, news) {
+		if (news.length > 0) {
+			for (let k in news) {
+				var msg 				= 'Success'
+				var status 				= true;
+				var result 				= {numFound: news.length, message: msg, return: status, response: news};
+				// if (objRedis.enable) {
+				// 	objRedis.result = JSON.stringify(result);
+				// 	GH.redisSave(objRedis);
+				// }
+				res.json(result);
+			}
+		}
+		else {
+			var result 	= {numFound: 0, message: msg, return: status, response: news};
+			res.json(result)
 		}
 	});
 });
