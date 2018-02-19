@@ -2,11 +2,11 @@ module.exports = {
 	news : {
 		enable : true,
 		expire : true,
-		ttl : 50000
+		ttl : 2
 	},
 	topics : {
 		enable : true,
 		expire : true,
-		ttl : 50000
+		ttl : 2
 	}
 };

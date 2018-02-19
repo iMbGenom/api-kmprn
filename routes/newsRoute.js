@@ -45,7 +45,6 @@ router.post('/send', function(req, res) {
 		return false;
 	}
 
-	news.nws_id 			= req.body.nws_id;
 	news.nws_title 			= req.body.nws_title;
 	news.nws_body 			= req.body.nws_body;
 	news.nws_topics 		= req.body.nws_topics;
@@ -210,8 +209,7 @@ router.post('/delete', function(req, res) {
 	var status 			= false;
 	let news 			= {};
 	let query 			= {_id:req.body.nws_id,nws_status:1};
-	// let query 			= {_id:nws_id,nws_status:1};
-	news.status 		= 0;
+	news.nws_status 	= 0;
 
 	News.deleteNews(query, news, function(err, news) {
 		if (err) {
