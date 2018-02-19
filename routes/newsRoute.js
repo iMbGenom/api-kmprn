@@ -195,11 +195,11 @@ router.post('/', function(req, res) {
 });
 
 router.get('/list', function(req, res) {
-	News.getAllNews(function(err, comment) {
+	News.getAllNews(function(err, news) {
 		if (err) {
 			res.json(err);
 		}
-		res.json(comment);
+		res.json(news);
 	});
 });
 
@@ -270,7 +270,7 @@ router.post('/search', function(req, res) {
 	let start_index 	= req.body.start_index ? req.body.start_index : 0;
 	let record_count 	= req.body.record_count ? req.body.record_count : 10;
 	let date_published 	= req.body.nws_date_published ? req.body.nws_date_published : d;
-	let query 			= {nws_status:nws_status,nws_topics:{$regex:'.*' + req.body.nws_topics + '.*'}};
+	let query 			= {nws_status:nws_status,nws_topics:{$regex:'.*' + req.body.nws_topics.toLowerCase() + '.*'}};
 
 	var objRedis 				= {};
 	objRedis.enable 			= cacheRedis.search.enable;
