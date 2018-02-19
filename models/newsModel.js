@@ -92,11 +92,11 @@ module.exports.deleteNews = function(query, news, callback) {
 module.exports.searchNews = function(query, start_index, record_count, date_published, byDate, callback, limit) {
 	var urutan 	= { nws_date_published: -1 };
 	if (byDate) {
-		console.log('by date');
+		// console.log('by date');
 		News.find(query, callback).sort(urutan).limit(record_count);
 	}
 	else {
-		console.log('by skip');
+		// console.log('by skip');
 		News.find(query, callback).sort(urutan).skip(start_index).limit(record_count);
 	}
 }
